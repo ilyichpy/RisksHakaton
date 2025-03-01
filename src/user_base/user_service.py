@@ -11,19 +11,18 @@ def init():
     print("соединение с базой прошло успешно")
     return conn
 
-def get_user_info(fio, connection) -> str:
+def get_user_info(fio, connection):
     cursor = connection.cursor()
     cursor.execute("""
                 SELECT * 
                 FROM user_info u
-                WHERE u.fio = \'ДУМА АНАСТАСИЯ АЛЕКСАНДРОВНА\';
+                WHERE u.fio = %s;
                 """,
                 [fio,]
             )
     sql_result = cursor.fetchone()
-    result = ""
-    for i in range(1, sql_result):
-        result += str(sql_result[i]) + " "
+    print(type(sql_result))
+    print(sql_result)
     cursor.close()
-    return result
+    return sql_result
 

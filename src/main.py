@@ -11,25 +11,29 @@ if __name__ == '__main__':
     agent = inicialization()
     connection = init()
 
+
     @bot.message_handler(commands=['start'])
     def start(message):
         user_name = message.from_user.first_name
         msg = bot.send_message(message.chat.id,
-                     f"👋 Привет, {user_name}!\n\n"
-                     "Я твой бот-помощник! Давай познакомимся. Введи, пожалуйста, свое **ФИО** (Фамилия Имя Отчество) 📄")
+                               f"👋 Привет, {user_name}!\n\n"
+                               "Я твой бот-помощник! Давай познакомимся. Введи, пожалуйста, свое **ФИО** (Фамилия Имя Отчество) 📄")
         bot.register_next_step_handler(msg, start_2)
 
 
     # message.text будет содержать введённое на предыдущем шаге - имя
     def start_2(message):
         bot.send_message(message.chat.id, f"✅ Отлично, {message.text}! Теперь мы можем продолжить.")
-        message.chat.id, get_user_info(message.text.upper(), connection)
-        load_info(get_user_info(message.text, connection), message.chat.id)
+        result = get_user_info(message.text.upper(), connection)
+        for i in range(1, len(result)):
+            check_file(result[i], agent, message.chat.id)
+
 
     @bot.message_handler(content_types=['text'])
     def handle_message(message):
         result = check_file(message.text, agent, message.chat.id)
         bot.send_message(message.chat.id, result)
+
 
     @bot.message_handler(content_types=['document'])
     def file_handler(message):
@@ -39,13 +43,12 @@ if __name__ == '__main__':
             pdf_stream = io.BytesIO(downloaded_file)
             reader = PdfReader(pdf_stream)
             for page in reader.pages:
-                load_info(page.extract_text(), message.chat.id)
-            result = check_file("Расскажи мне про файл который я тебе отправил только что частями", agent, "123")
+                check_file(page.extract_text(), agent, message.chat.id)
+            result = check_file("дай мне итоговый отчет", agent, message.chat.id)
             bot.send_message(message.chat.id, result)
         else:
             result = check_file(downloaded_file, agent, message.chat.id)
             bot.send_message(message.chat.id, result)
-
 
 
     while True:
