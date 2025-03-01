@@ -1,7 +1,6 @@
 from langchain_core.tools import tool
 from langchain_gigachat.chat_models import GigaChat
 from langgraph.checkpoint.memory import MemorySaver
-from langchain_core.messages import HumanMessage
 from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import create_react_agent
 import time
@@ -19,33 +18,27 @@ def inicialization() -> CompiledGraph:
         top_p=0.48
     )
     tools = [check_file_info]
-    system_prompt = """
-        Тебе будет приходить текст из файла кредитной истории.
-        Всегда вызывай метод check_file_info
-        Отвечай развернуто средним количеством текста, не пропуская ни один пункт промта
-        """
     print('Агент стартанул')
     return create_react_agent(args.model,
                               checkpointer=memory,
                               tools=tools,
-                              state_modifier=system_prompt)
+                            )
 
 
 def check_file(text, agent, user_id) -> str:
-    # print(text)
-    config = {"configurable": {"thread_id": user_id}}
-    resp = agent.invoke({"messages": [HumanMessage(content=text)]}, config=config)
-    # print(resp)
+    config = {"configurable": {"thread_id": user_id, "recursion_limit": "100"}}
+    resp = agent.invoke({"messages": [("user", text)]}, config=config)
+    print(resp)
     time.sleep(0.5)
     return resp["messages"][-1].content
 
 #просто загружаем файл в гигчат
 
-def load_file_pages(text, user_id):
-    config = {"configurable": {"thread_id": user_id}}
-    args.model.invoke(text, config=config)
-    print("\033[92m" + f"load_file_pages()" + "\033[0m")
-    time.sleep(0.5)
+# def load_file_pages(text, user_id):
+#     config = {"configurable": {"thread_id": user_id, "recursion_limit": "100"}}
+#     agent.invoke{"messages": [("user", text)]}, config=config
+#     print("\033[92m" + f"load_file_pages()" + "\033[0m")
+#     time.sleep(0.5)
 
 @tool
 def check_file_info():
@@ -54,7 +47,7 @@ def check_file_info():
     В запросе от клиента обязательно будет приложен текст с его кредитной историей. Ты должен уметь анализировать текст с данными в любом формате.
     Текст, который клиент загрузил, — это все что есть у клиента, других данных не проси, а анализируй то, что загрузил клиент. Тебе важен только текст, что делать с этим текстом описано дальше.
 
-    1) Найди различия в персональных данных от разных банков в файле и выведи какие различия ты нашел. НЕ делай выводы, НЕ принимай решение, ТОЛЬКО выведи разные значения фамилии, имени, отчества, даты рождения и паспорта. Клиент сам должен принять решение - это ошибка или нет. Главное покажи ему данные.
+    1) Найди различия в персональных данных от разных банков в файле и выведи какие различия ты нашел. ТОЛЬКО выведи разные значения фамилии, имени, отчества, даты рождения и паспорта. Клиент сам должен принять решение - это ошибка или нет. Главное покажи ему данные.
     - Если различия найдены и ты их показал, то посоветуй обратиться в сервис "Оспаривание ошибок в кредитной истории" в СберБанк Онлайн или в Бюро Кредитных историй (БКИ).
     - Если различий нет, то выведи, что обязательства принадлежат одному клиенту.
 
@@ -70,3 +63,4 @@ def check_file_info():
     """
     # Подсвечивает вызов функции зеленым цветом
     print("\033[92m" + f"Bot requested check_file_info()" + "\033[0m")
+
