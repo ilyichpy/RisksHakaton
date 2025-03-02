@@ -1,9 +1,9 @@
 ## Стек
 ### Библиотеки
-ИИ - langchain-gigachat, langgrah, langchain-community
-Telegram - pyTelegramBotAPI
-pdf - PyPDF2
-SQL - psycopg2
+* ИИ - langchain-gigachat, langgrah, langchain-community
+* Telegram - pyTelegramBotAPI
+* pdf - PyPDF2
+* SQL - psycopg2
 
 ### Запуск программы
 
