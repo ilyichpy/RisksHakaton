@@ -47,7 +47,7 @@ if __name__ == '__main__':
                 if counter >=10: break
                 check_file(page.extract_text(), agent, message.chat.id)
                 counter+=1
-            result = check_file("дай мне итог ", agent, message.chat.id)
+            result = check_file("дай мне итог обязательно вызови метод check_file_info", agent, message.chat.id)
             bot.send_message(message.chat.id, result)
         else:
             result = check_file(downloaded_file, agent, message.chat.id)
