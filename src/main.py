@@ -43,12 +43,12 @@ if __name__ == '__main__':
         if file_info.file_path.endswith(".pdf"):
             pdf_stream = io.BytesIO(downloaded_file)
             reader = PdfReader(pdf_stream)
+            full_text = ""
             for page in reader.pages:
-                if counter >=24: break
-                print(page.extract_text())
-                check_file(page.extract_text(), agent, message.chat.id)
+                if counter >=20: break
+                full_text += page.extract_text()
                 counter+=1
-            result = check_file("дай мне итоговый отчет", agent, message.chat.id)
+            result = check_file(full_text, agent, message.chat.id)
             bot.send_message(message.chat.id, result)
         else:
             result = check_file(downloaded_file, agent, message.chat.id)
