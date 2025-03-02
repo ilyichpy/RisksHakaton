@@ -43,12 +43,11 @@ if __name__ == '__main__':
         if file_info.file_path.endswith(".pdf"):
             pdf_stream = io.BytesIO(downloaded_file)
             reader = PdfReader(pdf_stream)
-            full_text = ""
             for page in reader.pages:
-                if counter >=20: break
-                full_text += page.extract_text()
+                if counter >=10: break
+                check_file(page.extract_text(), agent, message.chat.id)
                 counter+=1
-            result = check_file(full_text, agent, message.chat.id)
+            result = check_file("дай мне итог ", agent, message.chat.id)
             bot.send_message(message.chat.id, result)
         else:
             result = check_file(downloaded_file, agent, message.chat.id)
@@ -57,7 +56,7 @@ if __name__ == '__main__':
 
     while True:
         try:
-            bot.infinity_polling(timeout=30, long_polling_timeout=40)
+            bot.infinity_polling(timeout=120, long_polling_timeout=140)
         except Exception as e:
             print("Polling error:", e)
             time.sleep(1)
