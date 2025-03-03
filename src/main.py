@@ -26,7 +26,7 @@ if __name__ == '__main__':
         bot.send_message(message.chat.id, f"✅ Отлично, {message.text}! Теперь мы можем продолжить.")
         result = get_user_info(message.text.upper(), connection)
         for i in range(1, len(result)):
-            check_file(result[i], agent, message.chat.id)
+            check_file("сравнивай с этими данными "+ result[i], agent, message.chat.id)
 
 
     @bot.message_handler(content_types=['text'])
@@ -44,10 +44,10 @@ if __name__ == '__main__':
             pdf_stream = io.BytesIO(downloaded_file)
             reader = PdfReader(pdf_stream)
             for page in reader.pages:
-                if counter >=10: break
+                if counter >= 10: break
                 check_file(page.extract_text(), agent, message.chat.id)
                 counter+=1
-            result = check_file("дай мне итог обязательно вызови метод check_file_info", agent, message.chat.id)
+            result = check_file("дай мне итог обязательно вызови метод check_file_info()", agent, message.chat.id)
             bot.send_message(message.chat.id, result)
         else:
             result = check_file(downloaded_file, agent, message.chat.id)
